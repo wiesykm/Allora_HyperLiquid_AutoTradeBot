@@ -1,10 +1,10 @@
-# AlloraNetwork HyperLiquid Auto Trading Bot
+# 🚀 AlloraNetwork HyperLiquid Auto Trading Bot
 
 ![Allora Logo](#) <!-- Replace with an actual image link -->
 
-This project implements the **AlloraNetwork inference** to enable **automatic trading** on the decentralized exchange [HyperLiquid](https://hyperliquid.gitbook.io/hyperliquid-docs). The bot uses predictions from AlloraNetwork to make informed trading decisions based on customizable strategies.
+This project implements the **AlloraNetwork inference** to enable **automatic trading** on the decentralized exchange [HyperLiquid](https://hyperliquid.gitbook.io/hyperliquid-docs). The bot uses AI-driven predictions from AlloraNetwork to make informed trading decisions based on customizable strategies. 📈🤖
 
-## Prerequisites
+## 🛠️ Prerequisites
 
 1. **HyperLiquid Account**:
    - Create an account on HyperLiquid.
@@ -12,13 +12,13 @@ This project implements the **AlloraNetwork inference** to enable **automatic tr
 2. **API and Wallet Setup**:
    - Go to **More Options** > **API** in HyperLiquid.
    - Generate your **Private Key** and **Wallet Address**.
-   - Record this information securely.
+   - 🔒 Record this information securely.
 3. **Allora API Key**:
    - Create an API key from [Upshot Developer Portal](https://developer.upshot.xyz/).
 
 ![HyperLiquid API Setup](#) <!-- Replace with an actual image link -->
 
-## Installation
+## 🚀 Installation
 
 1. **Clone the Repository**:
    ```bash
@@ -47,17 +47,17 @@ This project implements the **AlloraNetwork inference** to enable **automatic tr
          "check_for_trades": 300
      }
      ```
-   - Save the file by pressing `CTRL+X`, then `Y`, and `Enter`.
+   - Save the file by pressing `CTRL+X`, then `Y`, and `Enter`. 💾
 
-## Configuration Details
+## ⚙️ Configuration Details
 
 - **price_gap**: The percentage difference between the Allora prediction and the current price to trigger a trade. Example: `0.25` means a 0.25% gap is required to initiate a trade.
-- **allowed_amount_per_trade**: The maximum amount (in USD) to open a trade. Note: Total trade value will include leverage.
+- **allowed_amount_per_trade**: 💵 The maximum amount (in USD) to open a trade. Note: Total trade value will include leverage.
 - **max_leverage**: Leverage multiplier for trades. Example: `5` means 5x leverage.
 - **check_for_trades**: Interval (in seconds) for the bot to check open positions and trading opportunities.
 - **allora_topics**: Map tradable tokens (e.g., BTC, ETH) to their Allora prediction topic IDs. Ensure tokens match HyperLiquid symbols.
 
-## Custom Strategy
+## 🧠 Custom Strategy
 
 You can integrate your custom trading strategy with the bot. Define your logic in the following function located in `strategy/custom_strategy.py`:
 
@@ -72,24 +72,25 @@ def custom_strategy(token, price=None):
 ```
 
 ### Example Workflow:
-1. **Allora Prediction**: Indicates a "BUY" signal for BTC.
+1. **Allora Prediction**: Indicates a "BUY" signal for BTC. 📊
 2. **Custom Strategy**: Also returns "BUY" for BTC.
-3. **Bot Action**: Opens a trade based on combined decisions.
+3. **Bot Action**: Opens a trade based on combined decisions. ✅
 
-If there’s a conflict (e.g., Allora says "BUY," but your strategy says "HOLD"), the bot will not execute the trade.
+If there’s a conflict (e.g., Allora says "BUY," but your strategy says "HOLD"), the bot will not execute the trade. ❌
 
-## Advanced Usage
+## 🔧 Advanced Usage
 
 You can combine the bot with other strategies or modify it further. Just import your custom strategy:
 ```python
 from strategy.custom_strategy import custom_strategy
 ```
 
-## Support
+## 💬 Support
 
 For any questions, feel free to contact me via GitHub. Don’t forget to give this repository a ⭐ if you find it helpful!
 
+## 🤝 Contribute
+
+This project is open source, and contributions are welcome! If you have ideas for improvements, feel free to fork the repository and submit a pull request. Together, we can make this bot even better. 🌟
+
 ---
-
-**Happy Trading!** 🚀
-
