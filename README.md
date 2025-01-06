@@ -14,7 +14,7 @@ This project implements the **[AlloraNetwork](https://www.allora.network/) infer
 3. **Allora API Key**:
    - Create an API key from [Upshot Developer Portal](https://developer.upshot.xyz/).
 
-![HyperLiquid API Setup](https://github.com/HarbhagwanDhaliwal/Allora_HyperLiquid_AutoTradeBot/blob/5f815d3fb8de1fc98c5c49f6a041dedab476ce07/hyper_api.jpeg) <!-- Replace with an actual image link -->
+<img src="https://github.com/HarbhagwanDhaliwal/Allora_HyperLiquid_AutoTradeBot/blob/5f815d3fb8de1fc98c5c49f6a041dedab476ce07/hyper_api.jpeg" alt="HyperLiquid API Setup" width="500"/>
 
 ## 🚀 Installation
 
