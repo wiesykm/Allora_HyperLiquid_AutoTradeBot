@@ -30,7 +30,7 @@ This project implements the **[AlloraNetwork](https://www.allora.network/) infer
 2. **Configure the Bot**:
    - Open the configuration file using `nano`:
      ```bash
-     nano config.json
+     nano config/config.json
      ```
    - Update the following fields with your details:
      ```json
