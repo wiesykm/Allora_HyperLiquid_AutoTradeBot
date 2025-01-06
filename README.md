@@ -1,6 +1,8 @@
 # 🚀 AlloraNetwork HyperLiquid Auto Trading Bot
 
-![Allora Logo](https://github.com/HarbhagwanDhaliwal/Allora_HyperLiquid_AutoTradeBot/blob/ef2285971f1bdeaec53c46f86e9b13c3ccf653b3/AlloraLogo.jpeg) <!-
+<p align="center">
+  <img src="https://github.com/HarbhagwanDhaliwal/Allora_HyperLiquid_AutoTradeBot/blob/ef2285971f1bdeaec53c46f86e9b13c3ccf653b3/AlloraLogo.jpeg" alt="Allora Logo" width="300">
+</p>
 
 This project implements the **[AlloraNetwork](https://www.allora.network/) inference** to enable **automatic trading** on the decentralized exchange [HyperLiquid](https://hyperliquid.gitbook.io/hyperliquid-docs). The bot uses AI-driven predictions from AlloraNetwork to make informed trading decisions based on customizable strategies. 📈🤖
 
