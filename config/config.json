@@ -1,0 +1,14 @@
+{
+    "secret_key": "Your Hyper Liquid Wallet Private Key",
+    "account_address": "Your Hyper Liquid Wallet Address",
+    "vault": "Your vault address which you created on HyperLiquid",
+    "allora_upshot_key": "Your Upshot API Key of Allora",
+    "allora_topics": {
+        "BTC": 14,
+        "ETH": 13
+    },
+    "price_gap": 0.25,
+    "allowed_amount_per_trade": 500,
+    "max_leverage": 5,
+    "check_for_trades": 300
+}
