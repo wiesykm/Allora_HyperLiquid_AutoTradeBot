@@ -101,11 +101,9 @@ The bot integrates DeepSeek AI as an additional layer of trade validation. This 
 
 ### Configuration
 
-Add your DeepSeek API key to your config:
+Add your DeepSeek API key to your `.env` file:
 ```json
-{
-    "deepseek_api_key": "Your DeepSeek API Key"
-}
+DEEPSEEK_API_KEY=
 ```
 
 ### Example Output
