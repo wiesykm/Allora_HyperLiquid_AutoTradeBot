@@ -1,7 +1,14 @@
-def custom_strategy(token, price=None):
+from .volatility_strategy import VolatilityStrategy
+
+# Initialize strategy globally
+volatility_strategy = VolatilityStrategy()
+
+def custom_strategy(token, price=None, allora_signal=None, allora_prediction=None):
     """
-    Function that takes 'token' and 'price' (optional, default None).
-    Returns either 'BUY', 'SELL', 'HOLD', or None based on the logic.
+    Modified custom strategy that trades counter to Allora's predictions
+    during high volatility periods
     """
-    # Default behavior is to return None (no decision)
-    return None
+    if price is None or allora_signal is None or allora_prediction is None:
+        return None
+    
+    return volatility_strategy.execute(token, price, allora_signal, allora_prediction)

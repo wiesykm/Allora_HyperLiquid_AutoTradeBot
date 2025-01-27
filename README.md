@@ -76,6 +76,55 @@ def custom_strategy(token, price=None):
 
 If there’s a conflict (e.g., Allora says "BUY," but your strategy says "HOLD"), the bot will not execute the trade. ❌
 
+## 🤖 DeepSeek AI Trade Reviewer
+
+The bot integrates DeepSeek AI as an additional layer of trade validation. This AI reviewer analyzes each potential trade before execution, considering multiple factors:
+
+### How It Works
+
+1. **Trade Analysis**: Before executing any trade, DeepSeek AI reviews:
+   - Current price vs Allora prediction
+   - Market volatility
+   - Trade direction (BUY/SELL)
+   - Historical performance in similar conditions
+
+2. **Decision Metrics**:
+   - `approval` (true/false): Whether the trade should proceed
+   - `confidence` (0-100): Confidence level in the decision
+   - `reasoning`: Detailed explanation of the decision
+   - `risk_score` (1-10): Risk assessment of the trade
+
+3. **Trade Requirements**:
+   - Minimum 70% confidence score
+   - DeepSeek approval must be true
+   - Risk score is logged for analysis
+
+### Configuration
+
+Add your DeepSeek API key to your config:
+```json
+{
+    "deepseek_api_key": "Your DeepSeek API Key"
+}
+```
+
+### Example Output
+```
+Trade Review by DeepSeek AI:
+  Confidence: 85%
+  Reasoning: "Strong directional alignment between Allora prediction and current market momentum. 
+             Volatility within acceptable range. Recent similar setups showed 70% success rate."
+  Risk Score: 3/10
+```
+
+### Benefits
+- 🎯 Reduced false positives
+- 📊 Enhanced risk management
+- 🧠 AI-powered trade validation
+- 📝 Detailed trade reasoning
+
+The DeepSeek reviewer acts as a "second opinion" to Allora's predictions, helping to filter out potentially risky trades and improve overall performance.
+
 ## 🔧 Advanced Usage
 
 You can combine the bot with other strategies or modify it further. Just import your custom strategy:

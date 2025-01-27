@@ -10,5 +10,7 @@
     "price_gap": 0.25,
     "allowed_amount_per_trade": 500,
     "max_leverage": 5,
-    "check_for_trades": 300
+    "check_for_trades": 300,
+    "volatility_threshold": 0.02,
+    "db_path": "trading_logs.db"
 }
