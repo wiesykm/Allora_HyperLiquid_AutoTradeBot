@@ -3,10 +3,12 @@ import time
 from utils.helpers import round_price
 from strategy.custom_strategy import custom_strategy
 from utils.constants import ALLORA_API_BASE_URL
+from database.db_manager import DatabaseManager
+from strategy.deepseek_reviewer import DeepSeekReviewer
 
 
 class AlloraMind:
-    def __init__(self, manager, allora_upshot_key, threshold=0.03):
+    def __init__(self, manager, allora_upshot_key, deepseek_api_key, threshold=0.03):
         """
         Initializes the AlloraMind with a given OrderManager and strategy parameters.
 
@@ -19,6 +21,8 @@ class AlloraMind:
         self.topic_ids = {}
         self.timeout = 5
         self.base_url = ALLORA_API_BASE_URL
+        self.db = DatabaseManager()
+        self.deepseek_reviewer = DeepSeekReviewer(deepseek_api_key)
 
     def set_topic_ids(self, topic_ids):
         """
@@ -58,92 +62,125 @@ class AlloraMind:
         """
         topic_id = self.topic_ids.get(token)
         if topic_id is None:
-            print(f"No topic ID configured for token: {token}")
+            self.log_analysis(token, "SKIP", None, None, reason="No topic ID configured")
             return "HOLD", None, None, None
 
         prediction = self.get_inference_ai_model(topic_id)
         if prediction is None:
+            self.log_analysis(token, "SKIP", None, None, reason="No prediction available")
             return "HOLD", None, None, None
 
         current_price = self.manager.get_price(token)
         if current_price is None:
-            print("Unable to fetch current price.")
+            self.log_analysis(token, "SKIP", None, None, reason="No price available")
             return "HOLD", None, None, None
 
-        # Calculate percentage difference
         prediction = float(prediction)
         current_price = float(current_price)
         difference = (prediction - current_price) / current_price
 
         if abs(difference) >= self.threshold:
-            return ("BUY" if difference > 0 else "SELL"), difference, current_price, prediction
+            signal = "BUY" if difference > 0 else "SELL"
+            self.log_analysis(token, signal, current_price, prediction, difference)
+            return signal, difference, current_price, prediction
+            
+        self.log_analysis(token, "HOLD", current_price, prediction, difference, "Below threshold")
         return "HOLD", difference, current_price, prediction
 
     def open_trade(self):
         """
         Opens a trade based on Allora and optional custom strategies.
-        The profit target is calculated automatically by Allora, and the stop-loss is set as 50% of the profit target.
         """
         tokens = list(self.topic_ids.keys())
         for token in tokens:
-            open_positions = self.manager.get_open_positions() or []
-            if any(pos['coin'] == token for pos in open_positions):
+            # Get open positions using the new format
+            open_positions = self.manager.list_open_positions()
+            
+            # Check if token is already in an open position
+            if token in open_positions:
                 print(f"Already an open position for {token}, skipping...")
                 continue
 
             allora_signal, allora_diff, current_price, prediction = self.generate_signal(token)
 
-            # If there's a custom strategy, combine it with Allora's signal
-            custom_signal = custom_strategy(token, current_price)
+            # Pass more information to custom strategy
+            custom_signal = custom_strategy(
+                token, 
+                current_price, 
+                allora_signal, 
+                prediction
+            )
 
-            if custom_signal == "BUY" and allora_signal == "BUY":
-                signal = "BUY"
-            elif custom_signal == "SELL" and allora_signal == "SELL":
-                signal = "SELL"
-            elif not custom_signal and allora_signal in ["BUY", "SELL"]:
-                signal = allora_signal
+            # Add DeepSeek review before executing trade
+            trade_data = {
+                'token': token,
+                'current_price': current_price,
+                'allora_prediction': prediction,
+                'prediction_diff': allora_diff * 100 if allora_diff else None,
+                'direction': allora_signal,
+                'market_condition': 'ANALYSIS'
+            }
+            review = self.deepseek_reviewer.review_trade(trade_data)
+            
+            if review and review['approval'] and review['confidence'] > 70:
+                # Continue with existing trade execution logic
+                if custom_signal == "BUY" and allora_signal == "BUY":
+                    signal = "BUY"
+                elif custom_signal == "SELL" and allora_signal == "SELL":
+                    signal = "SELL"
+                elif not custom_signal and allora_signal in ["BUY", "SELL"]:
+                    signal = allora_signal
+                else:
+                    print(f"No trading opportunity for {token}, signal: HOLD")
+                    continue
+
+                # If there's no signal, skip the token
+                if signal == "HOLD":
+                    continue
+
+                # Calculate profit target and stop-loss automatically
+                target_profit = abs(allora_diff) * 100  # Convert to percentage based on Allora's diff
+                stop_loss = target_profit * 0.5  # Stop-loss is 50% of the profit target
+                print(f"Profit Target: {target_profit}% and Stop Loss: {stop_loss}%")
+
+                # Generate the order based on the signal
+                if signal == "BUY":
+                    print(f"Generating BUY order for {token} with {allora_diff:.2%} difference "
+                          f"and Current Price: {current_price} Predicted Price: {prediction}")
+                    res = self.manager.create_trade_order(token, is_buy=True,
+                                                          profit_target=target_profit,
+                                                          loss_target=stop_loss)
+                    print(res)
+                elif signal == "SELL":
+                    print(f"Generating SELL order for {token} with {allora_diff:.2%} difference"
+                          f" and Current Price: {current_price} Predicted Price: {prediction}")
+                    print(f" token:{token}, profit targit: {target_profit} and Loss: {stop_loss}")
+                    res = self.manager.create_trade_order(token, is_buy=False,
+                                                          profit_target=target_profit,
+                                                          loss_target=stop_loss)
+                    print(res)
             else:
-                print(f"No trading opportunity for {token}, signal: HOLD")
-                continue
-
-            # If there's no signal, skip the token
-            if signal == "HOLD":
-                continue
-
-            # Calculate profit target and stop-loss automatically
-            target_profit = abs(allora_diff) * 100  # Convert to percentage based on Allora's diff
-            stop_loss = target_profit * 0.5  # Stop-loss is 50% of the profit target
-            print(f"Profit Target: {target_profit}% and Stop Loss: {stop_loss}%")
-
-            # Generate the order based on the signal
-            if signal == "BUY":
-                print(f"Generating BUY order for {token} with {allora_diff:.2%} difference "
-                      f"and Current Price: {current_price} Predicted Price: {prediction}")
-                res = self.manager.create_trade_order(token, is_buy=True,
-                                                      profit_target=target_profit,
-                                                      loss_target=stop_loss)
-                print(res)
-            elif signal == "SELL":
-                print(f"Generating SELL order for {token} with {allora_diff:.2%} difference"
-                      f" and Current Price: {current_price} Predicted Price: {prediction}")
-                print(f" token:{token}, profit targit: {target_profit} and Loss: {stop_loss}")
-                res = self.manager.create_trade_order(token, is_buy=False,
-                                                      profit_target=target_profit,
-                                                      loss_target=stop_loss)
-                print(res)
+                print(f"Trade rejected by DeepSeek AI:")
+                print(f"Confidence: {review['confidence']}%")
+                print(f"Reasoning: {review['reasoning']}")
+                print(f"Risk Score: {review['risk_score']}/10")
+                return
 
     def monitor_positions(self):
         """
         Monitors open positions and manages trades based on Allora predictions.
+        Uses 1% buffer to avoid closing on small prediction movements.
         """
         open_positions = self.manager.get_open_positions()
         if not open_positions:
             print("No open positions to track.")
             return
 
+        CLOSE_BUFFER = 0.01  # 1% buffer for closing positions
+
         for position in open_positions:
             token = position["coin"]
-            entry_price = float(position["entryPx"])
+            entry_price = float(position["entryPrice"])
             side = "A" if float(position["szi"]) > 0 else "B"
 
             topic_id = self.topic_ids.get(token)
@@ -152,18 +189,40 @@ class AlloraMind:
                 continue
 
             prediction = self.get_inference_ai_model(topic_id)
-            if prediction is None:
-                print(f"Prediction data unavailable for {token}. Skipping...")
+            current_price = self.manager.get_current_price(token)
+            
+            if prediction is None or current_price is None:
+                print(f"Data unavailable for {token}. Skipping...")
                 continue
 
-            if side == "A" and prediction < entry_price:
-                print(f"Closing LONG position for {token} as prediction ({prediction}) < entry price ({entry_price})")
-                self.manager.market_close(token)
-            elif side == "B" and prediction > entry_price:
-                print(f"Closing SHORT position for {token} as prediction ({prediction}) > entry price ({entry_price})")
+            current_price = float(current_price)
+            prediction = float(prediction)
+            pnl_percent = ((current_price - entry_price) / entry_price) * 100 * (1 if side == "A" else -1)
+            
+            # Calculate prediction difference as percentage
+            pred_diff_percent = (prediction - current_price) / current_price
+
+            # For SHORT positions (side B), close when prediction > current_price by buffer
+            # For LONG positions (side A), close when prediction < current_price by buffer
+            should_close = (side == "B" and pred_diff_percent > CLOSE_BUFFER) or \
+                          (side == "A" and pred_diff_percent < -CLOSE_BUFFER)
+
+            if should_close:
+                print(f"Closing {'LONG' if side == 'A' else 'SHORT'} position for {token}:")
+                print(f"  Side: {side}")
+                print(f"  Entry: ${entry_price:,.2f}")
+                print(f"  Current: ${current_price:,.2f} ({pnl_percent:+.2f}%)")
+                print(f"  Prediction: ${prediction:,.2f}")
+                print(f"  Prediction Difference: {pred_diff_percent:+.2%}")
+                print(f"  Reason: {'Prediction above current price by >1%' if side == 'B' else 'Prediction below current price by >1%'}")
                 self.manager.market_close(token)
             else:
-                print(f"Holding position for {token}: Side={side}, Entry={entry_price}, Prediction={prediction}")
+                print(f"Holding position for {token}:")
+                print(f"  Side: {side}")
+                print(f"  Entry: ${entry_price:,.2f}")
+                print(f"  Current: ${current_price:,.2f} ({pnl_percent:+.2f}%)")
+                print(f"  Prediction: ${prediction:,.2f}")
+                print(f"  Prediction Difference: {pred_diff_percent:+.2%}")
 
     def start_allora_trade_bot(self, interval=180):
         """
@@ -178,3 +237,21 @@ class AlloraMind:
             self.monitor_positions()
             print(f"Sleeping for {interval} seconds...")
             time.sleep(interval)
+
+    def log_analysis(self, token, signal_type, current_price, prediction, difference=None, reason=None):
+        """Silent logging to database without affecting console output"""
+        try:
+            trade_data = {
+                'token': token,
+                'current_price': current_price,
+                'allora_prediction': prediction,
+                'prediction_diff': difference * 100 if difference else None,
+                'volatility': self.manager.get_volatility(token) if hasattr(self.manager, 'get_volatility') else None,
+                'direction': signal_type,
+                'entry_price': current_price,
+                'market_condition': 'ANALYSIS',
+                'reason': reason
+            }
+            self.db.log_trade(trade_data)
+        except Exception as e:
+            print(f"Database logging error: {str(e)}")  # Only error gets printed
