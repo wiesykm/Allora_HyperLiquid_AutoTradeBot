@@ -6,6 +6,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
 # Database
 *.db
 
@@ -14,4 +15,5 @@ __pycache__/
 
 # IDE
 .vscode/
-.idea/ 
+.idea/
+venv/
