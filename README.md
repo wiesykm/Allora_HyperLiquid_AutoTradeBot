@@ -22,8 +22,15 @@ This project implements the **[AlloraNetwork](https://www.allora.network/) infer
    ```bash
    git clone https://github.com/HarbhagwanDhaliwal/Allora_HyperLiquid_AutoTradeBot.git
    ```
-
-2. **Configure the Bot**:
+2. **Create a virtual environment and activate it**:
+   ```bash
+   python3 -m venv venv && source venv/bin/activate
+   ```
+3. **Install required packages**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Configure the Bot**:
    - Open the configuration file using `nano`:
      ```bash
      nano config/config.json
@@ -46,6 +53,10 @@ This project implements the **[AlloraNetwork](https://www.allora.network/) infer
      }
      ```
    - Save the file by pressing `CTRL+X`, then `Y`, and `Enter`. 💾
+5. **Running the Bot**:
+   ```bash
+   python3 main.py
+   ```
 
 ## ⚙️ Configuration Details
 
