@@ -6,6 +6,7 @@ from utils.env_loader import EnvLoader
 from dotenv import load_dotenv
 import os
 
+
 def setup(base_url):
     # Load configuration from environment
     env_loader = EnvLoader()
@@ -21,12 +22,11 @@ def setup(base_url):
     allowed_amount_per_trade = config["allowed_amount_per_trade"]
     max_leverage = config["max_leverage"]
     price_gap = convert_percentage_to_decimal(config["price_gap"])
-    
+
     print(f"Running with vault: {vault}")
 
     info = Info(base_url, skip_ws=True)
     exchange = Exchange(account, base_url, account_address=address, vault_address=vault)
-    
+
     return (address, info, exchange, vault, allora_upshot_key, deepseek_api_key, check_for_trades,
             price_gap, allowed_amount_per_trade, max_leverage, allora_topics)
-
