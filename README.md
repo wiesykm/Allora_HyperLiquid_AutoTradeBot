@@ -98,13 +98,6 @@ Before you get started, make sure you have the following:
 
 By default, the bot uses a **volatility-based strategy** to make trading decisions. This strategy evaluates market conditions and Allora's predictions to determine whether to enter or exit trades. The default strategy is implemented in the `volatility_strategy` module.
 
-### How It Works
-1. **Allora Prediction**: The bot receives a signal (BUY/SELL) from AlloraNetwork.
-2. **Volatility Check**: The bot evaluates market volatility using the `VOLATILITY_THRESHOLD` parameter.
-3. **Trade Decision**:
-   - If volatility is within acceptable limits, the bot follows Allora's signal.
-   - If volatility is high, the bot may trade counter to Allora's predictions to mitigate risk.
-
 ---
 
 ## 🛠️ Custom Strategy
