@@ -1,20 +1,30 @@
-# 🚀 AlloraNetwork HyperLiquid Auto Trading Bot
+# 🚀 AlloraNetwork, HyperLiquid & DeepSeek AI Auto Trade Bot
 
-This project implements the **[AlloraNetwork](https://www.allora.network/) inference** to enable **automatic trading** on the decentralized exchange [HyperLiquid](https://hyperliquid.gitbook.io/hyperliquid-docs). The bot uses AI-driven predictions from AlloraNetwork to make informed trading decisions based on customizable strategies. 📈🤖
+Welcome to the **AlloraNetwork HyperLiquid Auto Trading Bot**! This project leverages **[AlloraNetwork](https://www.allora.network/) inference** to enable **automatic trading** on the decentralized exchange [HyperLiquid](https://hyperliquid.gitbook.io/hyperliquid-docs). The bot uses AI-driven predictions from AlloraNetwork, combined with **DeepSeek AI trade validation**, to make informed trading decisions based on customizable strategies. 📈🤖
+
+By default, the bot uses a **volatility-based strategy**, but you can define your own custom strategy to suit your trading preferences.
+
+---
 
 ## 🛠️ Prerequisites
 
+Before you get started, make sure you have the following:
+
 1. **HyperLiquid Account**:
-   - Create an account on HyperLiquid.
+   - Create an account on [HyperLiquid](https://hyperliquid.gitbook.io/hyperliquid-docs).
    - Set up your **Vault** for trading.
 2. **API and Wallet Setup**:
    - Go to **More Options** > **API** in HyperLiquid.
    - Generate your **Private Key** and **Wallet Address**.
    - 🔒 Record this information securely.
 3. **Allora API Key**:
-   - Create an API key from [Upshot Developer Portal](https://developer.upshot.xyz/).
+   - Create an API key from the [Upshot Developer Portal](https://developer.upshot.xyz/).
+4. **DeepSeek API Key**:
+   - Obtain your [DeepSeek API](https://deepseek.com/) key for AI-powered trade validation.
 
 <img src="https://github.com/HarbhagwanDhaliwal/Allora_HyperLiquid_AutoTradeBot/blob/5f815d3fb8de1fc98c5c49f6a041dedab476ce07/hyper_api.jpeg" alt="HyperLiquid API Setup" width="500"/>
+
+---
 
 ## 🚀 Installation
 
@@ -22,35 +32,48 @@ This project implements the **[AlloraNetwork](https://www.allora.network/) infer
    ```bash
    git clone https://github.com/HarbhagwanDhaliwal/Allora_HyperLiquid_AutoTradeBot.git
    ```
-2. **Create a virtual environment and activate it**:
+2. **Create a Virtual Environment and Activate It**:
    ```bash
    python3 -m venv venv && source venv/bin/activate
    ```
-3. **Install required packages**:
+3. **Install Required Packages**:
    ```bash
    pip install -r requirements.txt
    ```
 4. **Configure the Bot**:
-   - Open the configuration file using `nano`:
+   - Rename the `.env.example` file to `.env`:
      ```bash
-     nano config/config.json
+     mv .env.example .env
      ```
-   - Update the following fields with your details:
-     ```json
-     {
-         "secret_key": "Your Hyper Liquid Wallet Private Key",
-         "account_address": "Your Hyper Liquid Wallet Address",
-         "vault": "Your Vault Address on HyperLiquid",
-         "allora_upshot_key": "Your Allora Upshot API Key",
-         "allora_topics": {
-             "BTC": 14,
-             "ETH": 13
-         },
-         "price_gap": 0.25,
-         "allowed_amount_per_trade": 500,
-         "max_leverage": 5,
-         "check_for_trades": 300
-     }
+   - Open the `.env` file and update the following fields with your details:
+     ```bash
+     # HyperLiquid Credentials
+     HL_SECRET_KEY=      # Your HyperLiquid secret key
+     HL_ACCOUNT_ADDRESS= # Your HyperLiquid account address
+     HL_VAULT=           # Your HyperLiquid vault identifier
+
+     # Set to True to run the bot on the mainnet, False for testnet
+     MAINNET=False
+
+     # DeepSeek API
+     DEEPSEEK_API_KEY=   # Your DeepSeek API key
+
+     # Allora API
+     ALLORA_UPSHOT_KEY=  # Your Allora Upshot API key
+
+     # Trading Parameters
+     PRICE_GAP=0.25
+     ALLOWED_AMOUNT_PER_TRADE=10
+     MAX_LEVERAGE=1
+     CHECK_FOR_TRADES=300
+     VOLATILITY_THRESHOLD=0.02
+
+     # Database
+     DB_PATH=trading_logs.db
+
+     # Topic IDs
+     BTC_TOPIC_ID=14
+     ETH_TOPIC_ID=13
      ```
    - Save the file by pressing `CTRL+X`, then `Y`, and `Enter`. 💾
 5. **Running the Bot**:
@@ -58,38 +81,59 @@ This project implements the **[AlloraNetwork](https://www.allora.network/) infer
    python3 main.py
    ```
 
+---
+
 ## ⚙️ Configuration Details
 
-- **price_gap**: The percentage difference between the Allora prediction and the current price to trigger a trade. Example: `0.25` means a 0.25% gap is required to initiate a trade.
-- **allowed_amount_per_trade**: 💵 The maximum amount (in USD) to open a trade. Note: Total trade value will include leverage.
-- **max_leverage**: Leverage multiplier for trades. Example: `5` means 5x leverage.
-- **check_for_trades**: Interval (in seconds) for the bot to check open positions and trading opportunities.
-- **allora_topics**: Map tradable tokens (e.g., BTC, ETH) to their Allora prediction topic IDs. Ensure tokens match HyperLiquid symbols.
+- **PRICE_GAP**: The percentage difference between the Allora prediction and the current price to trigger a trade. Example: `0.25` means a 0.25% gap is required to initiate a trade.
+- **ALLOWED_AMOUNT_PER_TRADE**: 💵 The maximum amount (in USD) to open a trade. Note: Total trade value will include leverage.
+- **MAX_LEVERAGE**: Leverage multiplier for trades. Example: `1` means 1x leverage.
+- **CHECK_FOR_TRADES**: Interval (in seconds) for the bot to check open positions and trading opportunities.
+- **VOLATILITY_THRESHOLD**: The volatility threshold to consider before executing a trade.
+- **BTC_TOPIC_ID** and **ETH_TOPIC_ID**: Map tradable tokens (e.g., BTC, ETH) to their Allora prediction topic IDs. Ensure tokens match HyperLiquid symbols.
 
-## 🧠 Custom Strategy
+---
 
-You can integrate your custom trading strategy with the bot. Define your logic in the following function located in `strategy/custom_strategy.py`:
+## 🧠 Default Volatility Strategy
 
+By default, the bot uses a **volatility-based strategy** to make trading decisions. This strategy evaluates market conditions and Allora's predictions to determine whether to enter or exit trades. The default strategy is implemented in the `volatility_strategy` module.
+
+### How It Works
+1. **Allora Prediction**: The bot receives a signal (BUY/SELL) from AlloraNetwork.
+2. **Volatility Check**: The bot evaluates market volatility using the `VOLATILITY_THRESHOLD` parameter.
+3. **Trade Decision**:
+   - If volatility is within acceptable limits, the bot follows Allora's signal.
+   - If volatility is high, the bot may trade counter to Allora's predictions to mitigate risk.
+
+---
+
+## 🛠️ Custom Strategy
+
+You can define your own custom trading strategy by modifying the `custom_strategy` function in `strategy/custom_strategy.py`. This function allows you to incorporate your own logic and override the default volatility strategy.
+
+### Custom Strategy Function
 ```python
-def custom_strategy(token, price=None):
+def custom_strategy(token, price=None, allora_signal=None, allora_prediction=None):
     """
-    Function that takes 'token' and 'price' (optional, default None).
-    Returns either 'BUY', 'SELL', 'HOLD', or None based on the logic.
+    Modified custom strategy that trades counter to Allora's predictions
+    during high volatility periods.
     """
-    # Default behavior is to return None (no decision)
-    return None
+    if price is None or allora_signal is None or allora_prediction is None:
+        return None
+
+    # Use the default volatility strategy or implement your own logic here
+    return volatility_strategy.execute(token, price, allora_signal, allora_prediction)
 ```
 
-### Example Workflow:
-1. **Allora Prediction**: Indicates a "BUY" signal for BTC. 📊
-2. **Custom Strategy**: Also returns "BUY" for BTC.
-3. **Bot Action**: Opens a trade based on combined decisions. ✅
+### How to Use
+1. Open `strategy/custom_strategy.py`.
+2. Modify the `custom_strategy` function to implement your own logic.
 
-If there’s a conflict (e.g., Allora says "BUY," but your strategy says "HOLD"), the bot will not execute the trade. ❌
+---
 
 ## 🤖 DeepSeek AI Trade Reviewer
 
-The bot integrates DeepSeek AI as an additional layer of trade validation. This AI reviewer analyzes each potential trade before execution, considering multiple factors:
+The bot integrates **DeepSeek AI** as an additional layer of trade validation. This AI reviewer analyzes each potential trade before execution, considering multiple factors:
 
 ### How It Works
 
@@ -110,13 +154,6 @@ The bot integrates DeepSeek AI as an additional layer of trade validation. This 
    - DeepSeek approval must be true
    - Risk score is logged for analysis
 
-### Configuration
-
-Add your DeepSeek API key to your `.env` file:
-```json
-DEEPSEEK_API_KEY=
-```
-
 ### Example Output
 ```
 Trade Review by DeepSeek AI:
@@ -132,7 +169,20 @@ Trade Review by DeepSeek AI:
 - 🧠 AI-powered trade validation
 - 📝 Detailed trade reasoning
 
-The DeepSeek reviewer acts as a "second opinion" to Allora's predictions, helping to filter out potentially risky trades and improve overall performance.
+---
+
+## 🔄 Example Workflow
+
+1. **Allora Prediction**: Indicates a "BUY" signal for BTC. 📊
+2. **Custom Strategy**: Evaluates the trade based on your custom logic or the default volatility strategy.
+3. **DeepSeek AI Review**:
+   - Analyzes the trade for risk, confidence, and reasoning.
+   - Approves the trade if confidence is above 70% and risk is acceptable.
+4. **Bot Action**:
+   - If **Allora**, **Custom Strategy**, and **DeepSeek AI** all agree, the bot executes the trade. ✅
+   - If any of the three components disagree, the bot does not execute the trade. ❌
+
+---
 
 ## 🔧 Advanced Usage
 
@@ -141,12 +191,18 @@ You can combine the bot with other strategies or modify it further. Just import 
 from strategy.custom_strategy import custom_strategy
 ```
 
+---
+
 ## 💬 Support
 
 For any questions, feel free to contact me via GitHub. Don’t forget to give this repository a ⭐ if you find it helpful!
+
+---
 
 ## 🤝 Contribute
 
 This project is open source, and contributions are welcome! If you have ideas for improvements, feel free to fork the repository and submit a pull request. Together, we can make this bot even better. 🌟
 
 ---
+
+Happy Trading! 🚀📈
