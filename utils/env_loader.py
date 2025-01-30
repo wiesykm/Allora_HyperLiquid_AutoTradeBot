@@ -33,10 +33,11 @@ class EnvLoader:
             "check_for_trades": int(os.getenv('CHECK_FOR_TRADES', '300')),
             "volatility_threshold": float(os.getenv('VOLATILITY_THRESHOLD', '0.02')),
             "db_path": os.getenv('DB_PATH', 'trading_logs.db'),
+            "mainnet": os.getenv('MAINNET', "False"),
             "allora_topics": {
                 "BTC": int(os.getenv('BTC_TOPIC_ID', '14')),
                 "ETH": int(os.getenv('ETH_TOPIC_ID', '13'))
             }
         }
         
-        return config 
+        return config

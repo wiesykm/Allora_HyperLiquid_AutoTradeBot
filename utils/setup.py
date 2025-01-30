@@ -4,10 +4,11 @@ from hyperliquid.exchange import Exchange
 from utils.helpers import convert_percentage_to_decimal
 from utils.env_loader import EnvLoader
 from dotenv import load_dotenv
+from utils.constants import TESTNET_API_URL, MAINNET_API_URL
 import os
 
 
-def setup(base_url):
+def setup():
     # Load configuration from environment
     env_loader = EnvLoader()
     config = env_loader.get_config()
@@ -21,9 +22,15 @@ def setup(base_url):
     check_for_trades = config["check_for_trades"]
     allowed_amount_per_trade = config["allowed_amount_per_trade"]
     max_leverage = config["max_leverage"]
+    mainnet = config["mainnet"]
     price_gap = convert_percentage_to_decimal(config["price_gap"])
 
     print(f"Running with vault: {vault}")
+
+    if mainnet == "True":
+        base_url = MAINNET_API_URL
+    else:
+        base_url = TESTNET_API_URL
 
     info = Info(base_url, skip_ws=True)
     exchange = Exchange(account, base_url, account_address=address, vault_address=vault)

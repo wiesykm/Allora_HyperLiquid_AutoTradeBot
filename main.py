@@ -9,9 +9,8 @@ import time
 
 
 def main():
-    base_url = "https://api.hyperliquid.xyz"
     (address, info, exchange, vault, allora_upshot_key, deepseek_api_key, check_for_trades, price_gap,
-     allowed_amount_per_trade, max_leverage, allora_topics) = setup(base_url)
+     allowed_amount_per_trade, max_leverage, allora_topics) = setup()
     print(address)
 
     manager = OrderManager(exchange, vault, allowed_amount_per_trade, max_leverage, info)
