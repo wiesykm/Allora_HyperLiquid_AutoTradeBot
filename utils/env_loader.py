@@ -25,7 +25,8 @@ class EnvLoader:
         config = {
             "secret_key": os.getenv('HL_SECRET_KEY'),
             "account_address": os.getenv('HL_ACCOUNT_ADDRESS'),
-            "vault": os.getenv('HL_VAULT'),
+            "hl_master_address": os.getenv('HL_MASTER_ADDRESS'),
+            "vault": os.getenv('HL_VAULT', ''),
             "allora_upshot_key": os.getenv('ALLORA_UPSHOT_KEY'),
             "price_gap": float(os.getenv('PRICE_GAP', '0.25')),
             "allowed_amount_per_trade": float(os.getenv('ALLOWED_AMOUNT_PER_TRADE', '500')),

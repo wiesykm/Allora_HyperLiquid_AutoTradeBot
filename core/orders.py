@@ -77,6 +77,7 @@ class OrderManager:
         try:
             response = self.info.user_state(self.vault_address)
             positions = response.get('assetPositions', [])
+            print(positions)
             
             formatted_positions = []
             for pos in positions:
@@ -101,6 +102,7 @@ class OrderManager:
         print("Fetching wallet summary...")
         response = self.info.user_state(self.vault_address)
         summary = response.get("crossMarginSummary", {}) if mode == "cross" else response.get("marginSummary", {})
+        print(f" Wallet Summary: {summary}")
         return {
             "account_value": summary.get("accountValue"),
             "total_position_value": summary.get("totalNtlPos"),
