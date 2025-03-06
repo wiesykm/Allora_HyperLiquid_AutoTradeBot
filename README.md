@@ -48,32 +48,39 @@ Before you get started, make sure you have the following:
    - Open the `.env` file and update the following fields with your details:
      ```bash
      # HyperLiquid Credentials
-     HL_SECRET_KEY=      # Your HyperLiquid secret key
-     HL_ACCOUNT_ADDRESS= # Your HyperLiquid account address
-     HL_VAULT=           # Your HyperLiquid vault identifier
+HL_SECRET_KEY=        # Enter your HyperLiquid secret key  
+HL_ACCOUNT_ADDRESS=   # Enter your HyperLiquid account address  
 
-     # Set to True to run the bot on the mainnet, False for testnet
-     MAINNET=False
+# Vault Configuration  
+# Set HL_VAULT only if you want to run trades on a vault  
+HL_VAULT=             # Enter your HyperLiquid vault identifier  
 
-     # DeepSeek API
-     DEEPSEEK_API_KEY=   # Your DeepSeek API key
+# Master Address Configuration  
+# Set HL_MASTER_ADDRESS only if you want to run trades using your account instead of a vault  
+HL_MASTER_ADDRESS=    # Enter your MetaMask wallet address  
 
-     # Allora API
-     ALLORA_UPSHOT_KEY=  # Your Allora Upshot API key
+# Network Selection  
+# Set to True for mainnet, False for testnet  
+MAINNET=False  
 
-     # Trading Parameters
-     PRICE_GAP=0.25
-     ALLOWED_AMOUNT_PER_TRADE=10
-     MAX_LEVERAGE=1
-     CHECK_FOR_TRADES=300
-     VOLATILITY_THRESHOLD=0.02
+# API Keys  
+DEEPSEEK_API_KEY=     # Enter your DeepSeek API key  
+ALLORA_UPSHOT_KEY=    # Enter your Allora API key  
 
-     # Database
-     DB_PATH=trading_logs.db
+# Trading Parameters  
+PRICE_GAP=0.25                        # Minimum price gap for trades  
+ALLOWED_AMOUNT_PER_TRADE=10            # Maximum amount per trade  
+MAX_LEVERAGE=1                         # Maximum leverage allowed  
+CHECK_FOR_TRADES=300                    # Interval (in seconds) to check for trades  
+VOLATILITY_THRESHOLD=0.02               # Volatility threshold for trade execution  
 
-     # Topic IDs
-     BTC_TOPIC_ID=14
-     ETH_TOPIC_ID=13
+# Database Configuration  
+DB_PATH=trading_logs.db                # Path to the trading database  
+
+# Topic IDs (Asset Identifiers)  
+BTC_TOPIC_ID=47                         # Bitcoin topic ID  
+ETH_TOPIC_ID=13                         # Ethereum topic ID  
+
      ```
    - Save the file by pressing `CTRL+X`, then `Y`, and `Enter`. 💾
 5. **Running the Bot**:
