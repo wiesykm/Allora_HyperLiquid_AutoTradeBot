@@ -1,5 +1,7 @@
 import requests
 from typing import Dict, Optional
+import json
+
 
 class DeepSeekReviewer:
     def __init__(self, api_key: str):
@@ -12,7 +14,7 @@ class DeepSeekReviewer:
 
     def review_trade(self, trade_data: Dict) -> Optional[Dict]:
         prompt = self._create_review_prompt(trade_data)
-        
+
         try:
             response = requests.post(
                 self.api_url,
@@ -50,10 +52,19 @@ class DeepSeekReviewer:
 
     def _parse_analysis(self, analysis: str) -> Dict:
         try:
-            # Extract JSON from potential text wrapper
+            # Find JSON block in the response
             start = analysis.find('{')
-            end = analysis.rfind('}') + 1
-            json_str = analysis[start:end]
-            return json.loads(json_str)
-        except Exception:
-            return None 
+            end = analysis.rfind('}')
+
+            # Ensure valid JSON bounds
+            if start == -1 or end == -1:
+                raise ValueError("No valid JSON found in the response")
+
+            json_str = analysis[start:end + 1]  # Extract JSON substring
+            return json.loads(json_str)  # Convert to dict
+        except json.JSONDecodeError as e:
+            print(f"JSON decoding error: {e}")
+        except Exception as e:
+            print(f"Error parsing analysis: {e}")
+
+        return None  # Return None on failure
