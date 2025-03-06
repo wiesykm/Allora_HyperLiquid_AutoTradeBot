@@ -1,6 +1,6 @@
 # 🚀 AlloraNetwork, HyperLiquid & DeepSeek AI Auto Trade Bot
 
-Welcome to the **AlloraNetwork HyperLiquid Auto Trading Bot**! This project leverages **[AlloraNetwork](https://www.allora.network/) inference** to enable **automatic trading** on the decentralized exchange [HyperLiquid](https://hyperliquid.gitbook.io/hyperliquid-docs). The bot utilizes AI-driven predictions from AlloraNetwork, combined with **DeepSeek AI trade validation**, to make informed trading decisions based on customizable strategies. 📈🤖
+Welcome to the **AlloraNetwork HyperLiquid Auto Trading Bot**! This project leverages **[AlloraNetwork](https://www.allora.network/) inference** to enable **automatic trading** on the decentralized exchange [HyperLiquid](https://app.hyperliquid.xyz/). The bot utilizes AI-driven predictions from AlloraNetwork, combined with **DeepSeek AI trade validation**, to make informed trading decisions based on customizable strategies. 📈🤖
 
 By default, the bot uses a **volatility-based strategy**, but you can define your own custom strategy to suit your trading preferences.
 
