@@ -11,7 +11,7 @@ By default, the bot uses a **volatility-based strategy**, but you can define you
 Before you get started, make sure you have the following:
 
 1. **HyperLiquid Account**:
-   - Create an account on [HyperLiquid](https://hyperliquid.gitbook.io/hyperliquid-docs).
+   - Create an account on [HyperLiquid](https://app.hyperliquid.xyz/).
    - Set up your **Vault** for trading.
 2. **API and Wallet Setup**:
    - Go to **More Options** > **API** in HyperLiquid.
